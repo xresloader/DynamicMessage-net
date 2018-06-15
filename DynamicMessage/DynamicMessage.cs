@@ -626,7 +626,7 @@ namespace xresloader.Protobuf {
         }
 
         private void buildString(StringBuilder builder, string ident = "") {
-            builder.Append("{\n");
+            builder.Append("{\r\n");
             foreach (var field in fieldData) {
                 FieldDescriptorProto field_desc = null;
                 if (msgDescriptor.FieldIdIndex.TryGetValue(field.Key, out field_desc)) {
@@ -636,22 +636,22 @@ namespace xresloader.Protobuf {
                 }
 
                 if (field.Value is List<object>) {
-                    builder.Append("[");
+                    builder.Append("[ ");
                     foreach (var sub_obj in ((List<object>)field.Value)) {
                         builder.AppendFormat(" {0} ", ident);
                         if (sub_obj is DynamicMessage) {
-                            ((DynamicMessage)sub_obj).buildString(builder, ident + "    ");
-                            builder.Append(",");
+                            ((DynamicMessage)sub_obj).buildString(builder, ident + "  ");
+                            builder.Append(", ");
                         } else {
                             if (null != field_desc && field_desc.type == FieldDescriptorProto.Type.TYPE_BYTES) {
-                                builder.AppendFormat("{0},", BitConverter.ToString((byte[])sub_obj).Replace("-", ""));
+                                builder.AppendFormat("{0}, ", BitConverter.ToString((byte[])sub_obj).Replace("-", ""));
                             } else {
-                                builder.AppendFormat("{0},", sub_obj.ToString());
+                                builder.AppendFormat("{0}, ", sub_obj.ToString());
                             }
                         }
                     }
 
-                    builder.AppendFormat("{0} ],\n", ident);
+                    builder.AppendFormat("{0} ],\r\n", ident);
                 } else {
                     if (field.Value is DynamicMessage) {
                         ((DynamicMessage)field.Value).buildString(builder, ident + "  ");
@@ -663,6 +663,8 @@ namespace xresloader.Protobuf {
                             builder.AppendFormat("{0},", field.Value.ToString());
                         }
                     }
+
+                    builder.AppendFormat("\r\n", ident);
                 }
             }
             builder.Append(ident);
